@@ -1,0 +1,80 @@
+{
+  "Ganyu6": {
+    "character": [
+      "Ganyu_6"
+    ],
+    "card": [
+      "Jade Chamber",
+      "Amos's Bow",
+      "Jade Chamber",
+      "Paimon",
+      "Mushroom Pizza",
+      "Blizzard Strayer",
+      "The Bestest Travel Companion!",
+      "Light It Up!",
+      "Liben",
+      "Desiccant Potion",
+      "Lotus Flower Crisp",
+      "Liyue Harbor Wharf",
+      "Knights of Favonius Library",
+      "Liben",
+      "Blizzard Strayer",
+      "Paimon",
+      "Desiccant Potion",
+      "Timmie",
+      "Toss-Up",
+      "Toss-Up",
+      "Strategize",
+      "Send Off",
+      "The Bestest Travel Companion!",
+      "Strategize",
+      "Ad Astra…",
+      "Amos's Bow",
+      "Light It Up!",
+      "Lotus Flower Crisp",
+      "Timmie",
+      "Mushroom Pizza"
+    ],
+    "camp": "BOSS"
+  },
+  "Hydro Hypostasis": {
+    "character": [
+      "Mirror Maiden",
+      "Rhodeia of Loch",
+      "Fischl"
+    ],
+    "card": [
+      "Paimon",
+      "Paimon",
+      "The Bestest Travel Companion!",
+      "Lucky Dog's Silver Circlet",
+      "Lotus Flower Crisp",
+      "Elemental Resonance Woven Waters",
+      "Knights of Favonius Library",
+      "Liyue Harbor Wharf",
+      "Elemental Resonance Soothing Water",
+      "Strategize",
+      "Emergency Food",
+      "Liben",
+      "Timmie",
+      "2147483647",
+      "Liben",
+      "Lotus Flower Crisp",
+      "Elemental Resonance Woven Waters",
+      "Lucky Dog's Silver Circlet",
+      "Timmie",
+      "I Haven't Lost Yet!",
+      "I Haven't Lost Yet!",
+      "The Bestest Travel Companion!",
+      "Strategize",
+      "Emergency Food",
+      "2147483647",
+      "Elemental Resonance Soothing Water",
+      "Streaming Essential Oil",
+      "Streaming Essential Oil",
+      "Mushroom Pizza",
+      "Mushroom Pizza"
+    ],
+    "camp": "Player"
+  }
+}
