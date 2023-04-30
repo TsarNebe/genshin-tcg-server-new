@@ -10,12 +10,13 @@ def start_game(clients, mode, client_deck):
 
 class Server:
     def __init__(self):
-        self.waiting_clients = [] # 等待区中的客户端
-        self.client_info = {} # 客户端信息，格式为{"ip": (nickname, mode)}
-        self.mode_clients = {} # 以mode为键，保存选择该mode的客户端列表
-        self.config = read_json("config.json")["server"] # 加载配置文件
-        self.svr_sock = self.create_socket() # 创建套接字
-        self.valid_deck_client = {} # 客户端牌组信息，格式为{"ip": (character, deck)}
+        self.waiting_clients = [] # clients waiting in the waiting area
+        self.client_info = {} # client info, formatted as {"ip": (nickname, mode)}
+        self.mode_clients = {} # key: mode, value: list of clients who choose this mode
+        self.config = read_json("config.json")["server"] # load the configuration file
+        self.svr_sock = self.create_socket() # create socket
+        self.valid_deck_client = {} # client deck information, formatted as {"ip": (character, deck)}
+
 
     @staticmethod
     def create_socket():
@@ -25,6 +26,45 @@ class Server:
 
     def send(self, data, client):
         self.svr_sock.sendto(data, client)
+
+    def handle_game_session(conn, player_info):
+        ...
+        while True:
+            # Получаем сообщение от клиента
+            data = conn.recv(BUFFER_SIZE)
+            ...
+            # Если клиент отправил запрос на начало игры
+            elif message["message"] == "start game":
+            # Добавляем клиента в список ожидающих игроков
+            waiting_clients.append(conn)
+            client_info[address][1] = "waiting"
+            print(f"{client_info[address][0]} is waiting for an opponent.")
+            # Если количество ожидающих игроков становится 2, начинаем игру
+            if len(waiting_clients) == 2:
+                print("Two players are now waiting. Starting game.")
+                player1, player2 = waiting_clients
+                waiting_clients = []
+                # Определяем порядок игроков
+                player_order = [player1, player2] if random.random() < 0.5 else [player2, player1]
+                # Запускаем игровую сессию
+                game_session = GameSession(player_order[0], player_order[1], player_info)
+                game_session.start()
+                print("Game over.")
+            # Если количество ожидающих игроков становится 1, создаем бота и запускаем игру
+            elif len(waiting_clients) == 1:
+                print("One player is waiting. Starting game with bot.")
+                # Создаем бота
+                bot_deck = create_bot_deck()
+                bot_player = Player("Bot", bot_deck)
+                # Определяем порядок игроков
+                human_player, = waiting_clients
+                player_order = [human_player, bot_player]
+                waiting_clients = []
+                # Запускаем игровую сессию
+                game_session = GameSession(player_order[0], player_order[1], player_info)
+                game_session.start()
+                print("Game over.")
+
 
     def handle_message(self, data, remote_addr):
         try:
