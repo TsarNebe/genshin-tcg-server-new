@@ -1,18 +1,3 @@
-# Genius Invokation TCG, write in python.
-# Copyright (C) 2023 Asassong
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import random
 import time
@@ -843,24 +828,24 @@ class Game:
             if card.combat_limit:
                 satisfy = self.check_condition(player, None, card.combat_limit, special_const=select_const)
                 if not satisfy:
-                    print("不满足战斗限制")
+                    print("Combat limit not satisfied")
                     return False
             if "Food" in tag:
                 if isinstance(obj, Character):
                     if obj.get_saturation() < player.max_character_saturation:
                         obj.change_saturation("+1")
                     else:
-                        print("饱食度已满")
+                        print("Saturation is full")
                         return False
                 else:
                     return False
             elif "Weapon" in tag:
                 if isinstance(obj, Character):
                     if obj.weapon not in tag:
-                        print("武器类型错误")
+                        print("Wrong weapon type")
                         return False
                 else:
-                    print("选择目标非角色")
+                    print("Selected target is not a character")
                     return False
             elif "Location" in tag or "Companion" in tag or "Item" in tag:
                 if player.is_support_reach_limit():
@@ -869,9 +854,10 @@ class Game:
             cost_state = await self.action_cost(player, cost)
             print("cost_state", cost_state)
             if not cost_state:
-                print("费用不足")
+                print("Insufficient cost")
                 return False
-            await self.invoke_modify("card_cost", player, player.get_active_character_obj(), card_tag=tag, cost=card_cost)
+            await self.invoke_modify("card_cost", player, player.get_active_character_obj(), card_tag=tag,
+                                     cost=card_cost)
             player.remove_hand_card(card_index)
             player_index = self.players.index(player)
             self.record.write("player%d play card %s\n" % (player_index, card.get_name()))
@@ -910,7 +896,7 @@ class Game:
             else:
                 return True
         else:
-            print("费用不足")
+            print("Insufficient cost")
             return False
 
     async def handle_skill(self, player, invoker, skill_name, skip_cost=False):
@@ -1388,7 +1374,7 @@ class Game:
                     elif from_limit == "BOTH":
                         pass
                     else:
-                        print("未知from_limit")
+                        print("Unknown from_limit")
                         continue
                 print("valid source")
                 trigger_time = each_modify["trigger_time"]
@@ -1488,7 +1474,7 @@ class Game:
                         support_index = player.supports.index(invoker)
                         self.send_effect_message("change_support_usage", player, invoker, index=support_index)
                 else:
-                    print("找不到consume usage目标", modify)
+                    print("Cannot find target for consume usage", modify)
         reverse_delete(modifies, need_remove)
         return kwargs, remove_invoker
 
@@ -1506,7 +1492,7 @@ class Game:
                     oppose = self.get_one_oppose(player)
                     obj = oppose.summons[index]
                 else:
-                    print("不支持的fetch type %s" % fetch_type)
+                    print("Unsupported fetch type %s" % fetch_type)
                     return None
                 special_const[fetch_logic["export"]] = obj
                 return True
@@ -1634,7 +1620,7 @@ class Game:
                         self.send_effect_message("change_support_usage", player, invoker)
                     consume |= True
                 else:
-                    print("潜在错误：unknown counter name %s" % effect_type)
+                    print("Potential error: unknown counter name %s" % effect_type)
         else:
             if effect_type == "REROLL":
                 if isinstance(effect_value, str):
@@ -1646,7 +1632,7 @@ class Game:
                         await self.ask_player_reroll_dice(player)
                     consume |= True
                 else:
-                    print("潜在错误: 效果REROLL类型错误 %s" % effect_value)
+                    print("Potential error: Invalid REROLL effect type %s" % effect_value)
             elif effect_type == "FIXED_DICE":
                 return_effect.setdefault("FIXED_DICE", [])
                 for element in effect_value:
@@ -1727,7 +1713,7 @@ class Game:
                                         cost[element] += cost_change
                                         consume |= True
                     else:
-                        print("未知减费类型 %s" % element_type)
+                        print("Unknown cost reduction type %s" % element_type)
             elif effect_type == "DMG":
                 if "damage" in kwargs:
                     if effect_value.startswith("*") or effect_value.startswith("/"):
@@ -1758,7 +1744,7 @@ class Game:
                 elif effect_obj == "TEAM" or effect_obj == "ACTIVE":
                     player.team_state.setdefault("INFUSION", []).append(effect_value)
                 else:
-                    print("潜在错误：不支持infusion对象 %s" % effect_obj)
+                    print("Potential error: unsupported infusion object %s" % effect_obj)
                 consume |= True
             elif effect_type == "ADD_MODIFY":
                 if effect_obj in ["SELF", "TEAM"]:
@@ -1766,7 +1752,7 @@ class Game:
                 elif effect_obj in ["STATE"]:
                     return_effect.setdefault("add_modify", []).append(effect_value)
                 else:
-                    print("潜在错误：不支持add_modify对象 %s" % effect_obj)
+                    print("Potential error: unsupported add_modify object %s" % effect_obj)
                 consume |= True
             elif effect_type in {"HYDRO_DMG", "GEO_DMG", "ELECTRO_DMG","DENDRO_DMG", "PYRO_DMG", "PHYSICAL_DMG",
                                     "CRYO_DMG", "ANEMO_DMG", "PIERCE_DMG"}:
@@ -1781,7 +1767,7 @@ class Game:
                     # TODO 待确认
                     await self.handle_damage(player, None, invoker, {element_type: effect_value})
                 else:
-                    print("潜在错误：不支持额外攻击对象 %s" % effect_obj)
+                    print("Potential error: unsupported extra attack object %s" % effect_obj)
                 consume |= True
             elif effect_type == "DRAW_CARD":
                 if isinstance(effect_value, int):
@@ -1799,9 +1785,10 @@ class Game:
                             self.send_effect_message("add_card", player, invoker, card_name=cards_name[-draw_num:],
                                                      card_cost=cards_cost[-draw_num:], card_num=len(cards_name))
                     else:
-                        print("潜在错误：未知card type %s" % effect_value)
+                        print("Potential error: unknown card type %s" % effect_value)
                 else:
-                    print("潜在错误：不支持draw card类型 %s" % str(effect_value))
+                    print("Potential error: unsupported draw card type %s" % str(effect_value))
+
                 consume |= True
             elif effect_type == "ADD_CARD":
                 add_state = player.append_hand_card(effect_value)
@@ -1859,7 +1846,7 @@ class Game:
                                                  change_to=player.characters.index(change_to))
                         await self.invoke_modify("after_change", player, None)
                 else:
-                    print("潜在错误：未知change character对象 %s" % effect_obj)
+                    print("Potential error: unknown change character object %s" % effect_obj)
                 consume |= True
             elif effect_type == "HEAL":
                 if effect_obj == "ACTIVE":

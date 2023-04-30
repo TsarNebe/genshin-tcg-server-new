@@ -15,6 +15,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import json
+from typing import Union
+from collections import Counter
+from json import load
 from typing import Union, Any, Iterator
 from collections.abc import MutableMapping
 from collections import Counter
@@ -27,11 +30,11 @@ def read_json(file: str) -> dict[str]:
     return text
 
 
-def pre_check(mode: str, characters:list, cards:list) -> Union[bool, list]:
+def pre_check(mode: str, characters: list, cards: list) -> Union[bool, list]:
     invalid = []
-    config = read_json("config.json")
-    character_dict = read_json("character.json")
-    card_dict = read_json("card.json")
+    config = load(open("config.json"))
+    character_dict = load(open("character.json"))
+    card_dict = load(open("card.json"))
     game_config = config["Game"][mode]
     char_pack_limit = game_config["enable_character"]
     card_pack_limit = game_config["enable_deck"]
@@ -45,36 +48,36 @@ def pre_check(mode: str, characters:list, cards:list) -> Union[bool, list]:
         if pack_name in card_pack_limit:
             enable_cards.update(pack)
     if len(characters) != each_player_config["character_num"]:
-        invalid.append("角色卡数量不符合要求")
+        invalid.append("Number of character cards does not match requirements")
     if len(cards) != each_player_config["deck_num"]:
-        invalid.append("牌组数量不符合要求")
+        invalid.append("Number of deck cards does not match requirements")
     if len(set(characters)) != len(characters):
-        invalid.append("禁止重复角色")
+        invalid.append("Duplicate characters are not allowed")
     character_elements = []
     for character in characters:
         if character in enable_characters:
             character_info = enable_characters[character]
             character_elements.append(character_info["element_type"])
         else:
-            invalid.append("未知角色 %s" % character)
+            invalid.append("Unknown character %s" % character)
     count_card = dict(Counter(cards))
     for card_name, count in count_card.items():
         if count > 2:
-            invalid.append("卡牌 %s 数量过多" % card_name)
+            invalid.append("Too many cards %s" % card_name)
         if card_name in enable_cards:
             card_info = enable_cards[card_name]
             if "deck_limit" in card_info:
                 deck_limit = card_info["deck_limit"]
                 if "character" in deck_limit:
                     if deck_limit["character"] not in characters:
-                        invalid.append("卡牌 %s 不合法, 未携带对应角色" % card_name)
+                        invalid.append("Card %s is not valid, corresponding character is not carried" % card_name)
                 else:
                     for element in ["CRYO", "HYDRO", "PYRO", "ELECTRO", "DENDRO", "ANEMO", "GEO"]:
                         if element in deck_limit:
                             if character_elements.count(element) < deck_limit[element]:
-                                invalid.append("卡牌 %s 不合法, 对应元素角色不足" % card_name)
+                                invalid.append("Card %s is not valid, corresponding elemental character is insufficient" % card_name)
         else:
-            invalid.append("未知卡牌 %s" % card_name)
+            invalid.append("Unknown card %s" % card_name)
     if invalid:
         return invalid
     return True
