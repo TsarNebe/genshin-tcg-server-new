@@ -2,7 +2,7 @@ import json
 import sys
 from typing import Optional
 
-from PyQt6.QtCore import Qt, QMimeData, QTimer
+from PyQt6.QtCore import Qt, QMimeData, QTimer, QObject, pyqtSignal
 from PyQt6.QtGui import QPixmap, QFont, QFontDatabase, QMouseEvent, QAction, QActionGroup, QDrag, QDragMoveEvent, \
     QDragEnterEvent, QDropEvent
 from PyQt6.QtNetwork import QUdpSocket, QHostAddress
@@ -10,8 +10,9 @@ from PyQt6.QtWidgets import QMainWindow, QApplication, QLabel, QFrame, QVBoxLayo
     QHBoxLayout, QGridLayout, QWidget, QPushButton, QMenu, QMessageBox
 
 
-class Gcg(QMainWindow):
+class Gcg(QMainWindow, QObject):
     def __init__(self):
+        my_signal = pyqtSignal(int)
         super().__init__()
         self.setWindowTitle("Genius Invokation TCG")
         self.main_widget = QWidget(self)
@@ -98,7 +99,6 @@ class Gcg(QMainWindow):
         self.resize_timer = QTimer(self)
         self.resize_timer.setInterval(100)
         self.resize_timer.timeout.connect(self.on_resize_finished)
-
 
     def socket_recv(self):
         while self._socket.hasPendingDatagrams():
