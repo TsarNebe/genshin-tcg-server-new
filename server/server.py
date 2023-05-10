@@ -18,11 +18,16 @@ class Server:
         self.config = read_json("config.json")["server"]  # load the configuration file
         self.svr_sock = self.create_socket()  # create socket
         self.valid_deck_client = {}  # client deck information, formatted as {"ip": (character, deck)}
+        self._localhost = socket.gethostbyname(socket.gethostname())
+        self._server_port = 4095
+        self._server_port2 = 4096
+        self._max_players = 2
+        self._players = []
 
     @staticmethod
-    def create_socket():
+    def create_socket(port):
         svr_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        svr_sock.bind(("127.0.0.1", 4095))
+        svr_sock.bind(("127.0.0.1", port))
         return svr_sock
 
     def send(self, data, client):
